@@ -3,7 +3,7 @@ import os
 import pandas as pd
 from datetime import datetime
 
-def request_data():
+def RequestAndSavedata():
     client = Spot()
     last_timestamp = 1501549200000-1
     i = 0
@@ -37,6 +37,6 @@ def get_data(folder_path):
     return merged_df
 
 # Example usage:
-folder_path = '../data'
-merged_df = get_data(folder_path)
-print(merged_df)
+# folder_path = '../Data'
+# merged_df = get_data(folder_path)
+# print(merged_df)
