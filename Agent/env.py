@@ -8,12 +8,13 @@ class CustomEnv(gym.Env):
         self.action_space = spaces.Discrete(3)  # Three discrete actions: 0, 1, 2
         self.timestep=200
         self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
+        self.observation_space = spaces.Box(low=-np.inf, high=np.inf,dtype=np.float32)
         drop = ['timestamp_o', 'timestamp_cl', 'ignore']
         self.state.drop(columns=drop, inplace=True)
         self.von = 1000
         self.portfolio = 1000
         self.inventory = []
-        self.observation_space = spaces.Box(low=-np.inf, high=np.inf,dtype=np.float32, shape=(42,self.state.shape[1]))
+        
     def reset(self):
         self.timestep = 200
         self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
