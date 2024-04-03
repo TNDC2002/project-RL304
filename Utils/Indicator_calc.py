@@ -114,15 +114,11 @@ def calc(path = '../Data'):
                         'Inverted_Hammer', 'Engulfing', 'Morning_Star', 'Evening_Star', 'Hanging_Man', 'Dark_Cloud_Cover']
 
             dfs.append(data)
-            data.to_csv(file_path, index=False)
+            data.to_csv(file_path, index=True)
 
     
     if len(dfs) != 0:    
         data = pd.concat(dfs, ignore_index=True)
-        # Convert 'timestamp_o' column to datetime format (assuming it's in milliseconds)
-        data['timestamp_o'] = pd.to_datetime(data['timestamp_o'], unit='ms')
-        # Set 'timestamp_o' column as the index of the DataFrame
-        data.set_index('timestamp_o', inplace=True)
         print(data)
         data.rename(columns={
             'o': 'Open',
