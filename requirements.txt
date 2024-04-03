@@ -1,3 +1,4 @@
 binance-connector
 ta-lib
 mplfinance
+gym
