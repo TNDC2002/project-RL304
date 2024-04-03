@@ -11,18 +11,17 @@ def RequestAndSavedata():
         print("start day: ",last_timestamp+1)
         df = pd.DataFrame(client.klines("BTCUSDT", "4h", startTime=last_timestamp+1), columns=['timestamp_o', 'o', 'h', 'l', 'cl', 'vol', 'timestamp_cl', 'quote_asset_volume', 'number_of_trades', 'taker_buy_base_asset_volume', 'taker_buy_quote_asset_volume', 'ignore'])
         # Convert 'timestamp_o' column to datetime format (assuming it's in milliseconds)
-        df['timestamp_o'] = pd.to_datetime(df['timestamp_o'], unit='ms')
-        df.set_index('timestamp_o', inplace=True)
+        
         
         
         last_timestamp = df['timestamp_cl'].iloc[-1]
         dt = datetime.fromtimestamp(last_timestamp / 1000.0)
         filename = dt.strftime('%Y-%m-%d_%H-%M-%S.csv')
         print("end day: ",filename)
-        df.to_csv('../data/' + filename, index=True)
+        df.to_csv('../../Data/' + filename, index=False)
         i+=1
 
-def get_data(folder_path):
+def get_data(folder_path = '../../Data/'):
     # Initialize an empty list to store DataFrames
     dfs = []
     # Iterate over files in the folder

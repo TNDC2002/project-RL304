@@ -14,7 +14,7 @@ def calced(file_path):
         print("===========should run===========")
         return True
             
-def calc(path = '../Data'):
+def calc(path = '../../Data'):
     dfs = []
     # Iterate over files in the folder
     for filename in os.listdir(path):
@@ -58,7 +58,7 @@ def calc(path = '../Data'):
 
 
             dfs.append(data)
-            data = pd.concat(dfs, ignore_index=False)
+            data = pd.concat(dfs, ignore_index=True)
 
             # # Trend indicator (OVERLAP STUDIES)
                 # Calculate Moving Average (MA)
@@ -111,10 +111,12 @@ def calc(path = '../Data'):
             data['ATR'] = talib.ATR(data['h'], data['l'], data['cl'], timeperiod=14)
 
 
-            data.tail(data_len).to_csv(file_path, index=True)
+            data.tail(data_len).to_csv(file_path, index=False)
 
     
     if len(dfs) != 0:    
+        data['timestamp_o'] = pd.to_datetime(data['timestamp_o'], unit='ms')
+        data.set_index('timestamp_o', inplace=True)
         data = pd.concat(dfs, ignore_index=True)
         print(data)
         data.rename(columns={
@@ -137,7 +139,7 @@ def calc(path = '../Data'):
     
             
 
-calc()
+# calc()
 
 # # Plotting
 # plt.figure(figsize=(10, 6))

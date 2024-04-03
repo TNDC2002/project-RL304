@@ -8,12 +8,13 @@ class CustomEnv(gym.Env):
         self.observation_space = spaces.Discrete(5)  # Example discrete state space
         self.action_space = spaces.Discrete(3)  # Three discrete actions: 0, 1, 2
         self.timestep=200
-        self.state = get_data.iloc[self.timestep:self.timestep+42]
+        self.state = get_data('../Data').iloc[self.timestep:self.timestep+42]
         self.von = 1000
         self.portfolio = 1000
+        self.inventory = []
     def reset(self):
         self.timestep = 200
-        self.state = get_data.iloc[self.timestep:self.timestep+42]  # Reset the state
+        self.state = get_data('../Data').iloc[self.timestep:self.timestep+42]  # Reset the state
         self.von = 1000
         self.portfolio = 1000
         self.inventory = []
@@ -25,17 +26,18 @@ class CustomEnv(gym.Env):
         # Perform action and update state
         if action == 0:
             self.timestep += 1
-            self.state = get_data.iloc[self.timestep:self.timestep+42]
+            self.state = get_data('../Data').iloc[self.timestep:self.timestep+42]
         elif action == 1:
+            print(self.state.tail(1)['cl'].item())
             self.timestep += 1
-            self.state = get_data.iloc[self.timestep:self.timestep+42]
-            self.inventory.append((self.von/10)/self.state.iloc[:-1]['cl'])
+            self.state = get_data('../Data').iloc[self.timestep:self.timestep+42]
+            self.inventory.append((self.von/10)/self.state.tail(1)['cl'].item())
             self.von -= self.von/10
             
         else:
             self.timestep += 1
-            self.state = get_data.iloc[self.timestep:self.timestep+42]
-            self.von += self.inventory[-1] * self.state.iloc[:-1]['cl']
+            self.state = get_data('../Data').iloc[self.timestep:self.timestep+42]
+            self.von += self.inventory[-1] * self.state.tail(1)['cl'].item()
             self.inventory = self.inventory[:-1]
 
         # Define reward based on the new state
@@ -52,8 +54,9 @@ class CustomEnv(gym.Env):
     def _calculate_reward(self):
         portfo = 0
         for each in self.inventory:
-            each *= self.state.iloc[:-1]['cl']
+            each *= self.state.tail(1)['cl'].item()
             portfo += each
+            # print('portfo:',portfo)
         portfo += self.von
         reward = portfo - self.portfolio
         self.portfolio = portfo
