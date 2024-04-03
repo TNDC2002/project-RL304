@@ -18,10 +18,10 @@ def RequestAndSavedata():
         dt = datetime.fromtimestamp(last_timestamp / 1000.0)
         filename = dt.strftime('%Y-%m-%d_%H-%M-%S.csv')
         print("end day: ",filename)
-        df.to_csv('../../Data/' + filename, index=False)
+        df.to_csv('../Data/' + filename, index=False)
         i+=1
 
-def get_data(folder_path = '../../Data/'):
+def get_data(folder_path = '../Data/'):
     # Initialize an empty list to store DataFrames
     dfs = []
     # Iterate over files in the folder

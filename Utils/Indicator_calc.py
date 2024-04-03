@@ -14,7 +14,7 @@ def calced(file_path):
         print("===========should run===========")
         return True
             
-def calc(path = '../../Data'):
+def calc(path = '../Data'):
     dfs = []
     # Iterate over files in the folder
     for filename in os.listdir(path):

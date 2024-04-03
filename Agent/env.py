@@ -4,17 +4,21 @@ import numpy as np
 from Utils.get_data import get_data
 class CustomEnv(gym.Env):
     def __init__(self):
-        super(CustomEnv, self).__init__()
-        self.observation_space = spaces.Discrete(5)  # Example discrete state space
+        super(CustomEnv, self).__init__()  # Example discrete state space
         self.action_space = spaces.Discrete(3)  # Three discrete actions: 0, 1, 2
         self.timestep=200
-        self.state = get_data('../Data').iloc[self.timestep:self.timestep+42]
+        self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
+        drop = ['timestamp_o', 'timestamp_cl', 'ignore']
+        self.state.drop(columns=drop, inplace=True)
         self.von = 1000
         self.portfolio = 1000
         self.inventory = []
+        self.observation_space = spaces.Box(low=-np.inf, high=np.inf,dtype=np.float32, shape=(42,self.state.shape[1]))
     def reset(self):
         self.timestep = 200
-        self.state = get_data('../Data').iloc[self.timestep:self.timestep+42]  # Reset the state
+        self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
+        drop = ['timestamp_o', 'timestamp_cl', 'ignore']
+        self.state.drop(columns=drop, inplace=True)
         self.von = 1000
         self.portfolio = 1000
         self.inventory = []
@@ -26,17 +30,17 @@ class CustomEnv(gym.Env):
         # Perform action and update state
         if action == 0:
             self.timestep += 1
-            self.state = get_data('../Data').iloc[self.timestep:self.timestep+42]
+            self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
         elif action == 1:
             print(self.state.tail(1)['cl'].item())
             self.timestep += 1
-            self.state = get_data('../Data').iloc[self.timestep:self.timestep+42]
+            self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
             self.inventory.append((self.von/10)/self.state.tail(1)['cl'].item())
             self.von -= self.von/10
             
         else:
             self.timestep += 1
-            self.state = get_data('../Data').iloc[self.timestep:self.timestep+42]
+            self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
             self.von += self.inventory[-1] * self.state.tail(1)['cl'].item()
             self.inventory = self.inventory[:-1]
 
@@ -62,6 +66,8 @@ class CustomEnv(gym.Env):
         self.portfolio = portfo
         
         print('reward:',reward)
+        print('inventory:',self.inventory)
+        print('portfolio:',self.portfolio)
         return reward  # No reward otherwise
 
     def _is_done(self):
