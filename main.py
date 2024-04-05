@@ -10,7 +10,8 @@ while True:
     next_state, reward, done = env.step(user_input)
 
     # Print information
-    # print("Next state:", next_state)
+    # print("Next state:", next_state.columns)
+    # print("Next state:", len(next_state.columns))
     # print("Reward:", reward)
     # print("Done:", done)
 

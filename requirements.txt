@@ -2,3 +2,8 @@ binance-connector
 ta-lib
 mplfinance
 gym
+PyVirtualDisplay==3.0
+gymnasium==0.28.1
+torch 
+torchvision 
+torchaudio

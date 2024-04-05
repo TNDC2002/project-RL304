@@ -37,7 +37,7 @@ def get_data(folder_path = '../Data/'):
 
     # Merge DataFrames into a single DataFrame
     merged_df = pd.concat(dfs, ignore_index=True)
-
+    # print(dfs)
     return merged_df
 
 # Example usage:
