@@ -1,6 +1,5 @@
 from Agent.env import CustomEnv
 env = CustomEnv()
-
 while True:
     # Get action input from the user
     user_input = int(input("Enter action (0, 1, or 2): "))  # Assuming actions are integers

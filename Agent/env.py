@@ -2,13 +2,17 @@ import gym
 from gym import spaces
 import numpy as np
 from Utils.get_data import get_data
+import pandas as pd
 class CustomEnv(gym.Env):
     def __init__(self):
         super(CustomEnv, self).__init__()  # Example discrete state space
         self.action_space = spaces.Discrete(3)  # Three discrete actions: 0, 1, 2
-        self.timestep=200
-        self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
         self.observation_space = spaces.Box(low=-np.inf, high=np.inf,dtype=np.float32)
+        
+        
+        self.timestep = 200
+        self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
+        self.tempstate = get_data('./Data').iloc[self.timestep:self.timestep+42]
         drop = ['timestamp_o', 'timestamp_cl', 'ignore']
         self.state.drop(columns=drop, inplace=True)
         
@@ -19,6 +23,7 @@ class CustomEnv(gym.Env):
     def reset(self):
         self.timestep = 200
         self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
+        self.tempstate = get_data('./Data').iloc[self.timestep:self.timestep+42]
         drop = ['timestamp_o', 'timestamp_cl', 'ignore']
         self.state.drop(columns=drop, inplace=True)
         
@@ -29,27 +34,38 @@ class CustomEnv(gym.Env):
 
     def step(self, action):
         assert self.action_space.contains(action), "Invalid action"
+        # if self.timestep == 200 and get_data('./Data').iloc[self.timestep:self.timestep+42]['timestamp_o'].head(1).item() >= 1506412800000:
+        #     self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
+        #     drop = ['timestamp_o', 'timestamp_cl', 'ignore']
+        #     self.state.drop(columns=drop, inplace=True)
+        #     print('IT WRONG:',pd.to_datetime(get_data('./Data').iloc[self.timestep+41:self.timestep+42].head(1)['timestamp_o'], unit='ms'))
+        print("=================================================================")
 
         # Perform action and update state
         if action == 1 and self.von > 0:
-            # print(self.state.tail(1)['cl'].item())
-            self.timestep += 1
-            self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
-            drop = ['timestamp_o', 'timestamp_cl', 'ignore']
-            self.state.drop(columns=drop, inplace=True)
             self.inventory.append((self.von/10)/self.state.tail(1)['cl'].item())
             self.von -= self.von/10
-            
-        elif action == 2 and len(self.inventory) != 0:            
             self.timestep += 1
-            self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]    
+            self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
+            self.tempstate = get_data('./Data').iloc[self.timestep:self.timestep+42]
+            # print(pd.to_datetime(self.state.tail(1)['timestamp_o'], unit='ms') )
             drop = ['timestamp_o', 'timestamp_cl', 'ignore']
             self.state.drop(columns=drop, inplace=True)
+            
+        elif action == 2 and len(self.inventory) != 0: 
             self.von += self.inventory[-1] * self.state.tail(1)['cl'].item()
-            self.inventory = self.inventory[:-1]
+            self.inventory = self.inventory[:-1]       
+            self.timestep += 1
+            self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
+            self.tempstate = get_data('./Data').iloc[self.timestep:self.timestep+42]
+            # print(pd.to_datetime(self.state.tail(1)['timestamp_o'], unit='ms') )
+            drop = ['timestamp_o', 'timestamp_cl', 'ignore']
+            self.state.drop(columns=drop, inplace=True)
         else:
             self.timestep += 1
             self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
+            self.tempstate = get_data('./Data').iloc[self.timestep:self.timestep+42]
+            # print(pd.to_datetime(self.state.tail(1)['timestamp_o'], unit='ms') )
             drop = ['timestamp_o', 'timestamp_cl', 'ignore']
             self.state.drop(columns=drop, inplace=True)
         # Define reward based on the new state
@@ -74,12 +90,16 @@ class CustomEnv(gym.Env):
         self.portfolio = portfo
         
         # print('reward:',reward)
-        print("=======================================")
-        print('inventory:',self.inventory)
+        # print('inventory:',self.inventory)
         print('portfolio:',self.portfolio)
+        print("--------------------------------------------")
         return reward  # No reward otherwise
 
     def _is_done(self):
         # Define termination condition
-        return self.timestep >= 500*29 + 10
+        print("is done:",pd.to_datetime(self.tempstate.tail(1)['timestamp_o'], unit='ms') )
+        print('timestep:', self.timestep)
+        
+        print(self.tempstate.tail(1)['timestamp_o'].item(), '>=', 1711339200000, '=',self.tempstate.tail(1)['timestamp_o'].item() >= 1711339200000)
+        return self.tempstate.tail(1)['timestamp_o'].item() >= 1711339200000
 
