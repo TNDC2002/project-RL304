@@ -87,12 +87,12 @@ class CustomEnv(gym.Env):
         print('portfolio:',self.portfolio)
         print("--------------------------------------------")
         print('inventory:',len(self.inventory))
-        print('inventory:',self.inventory))
+        print('inventory:',self.inventory)
         return reward  # No reward otherwise
 
     def _is_done(self):
         # Define termination condition
         
-        print(self.tempstate.tail(1)['timestamp_o'].item() / 1711339200000 *100, '%')
+        print(((self.tempstate.tail(1)['timestamp_o'].item() - 1711339200000)*100) / 1711339200000, '%')
         return self.tempstate.tail(1)['timestamp_o'].item() >= 1711339200000
 
