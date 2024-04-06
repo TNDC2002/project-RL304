@@ -12,10 +12,11 @@ class CustomEnv(gym.Env):
         
         self.timestep = 200
         self.data = get_data('./Data')
+        drop = ['timestamp_o', 'timestamp_cl', 'ignore']
+        self.data.drop(columns=drop, inplace=True)
         self.state = self.data.iloc[self.timestep:self.timestep+42]
         self.tempstate = self.data.iloc[self.timestep:self.timestep+42]
-        drop = ['timestamp_o', 'timestamp_cl', 'ignore']
-        self.state.drop(columns=drop, inplace=True)
+        
         
         self.von = 1000
         self.portfolio = 1000
@@ -25,9 +26,6 @@ class CustomEnv(gym.Env):
         self.timestep = 200
         self.state = self.data.iloc[self.timestep:self.timestep+42]
         self.tempstate = self.data.iloc[self.timestep:self.timestep+42]
-        drop = ['timestamp_o', 'timestamp_cl', 'ignore']
-        self.state.drop(columns=drop, inplace=True)
-        
         self.von = 1000
         self.portfolio = 1000
         self.inventory = []
@@ -44,9 +42,6 @@ class CustomEnv(gym.Env):
             self.timestep += 1
             self.state = self.data.iloc[self.timestep:self.timestep+42]
             self.tempstate = self.data.iloc[self.timestep:self.timestep+42]
-            # print(pd.to_datetime(self.state.tail(1)['timestamp_o'], unit='ms') )
-            drop = ['timestamp_o', 'timestamp_cl', 'ignore']
-            self.state.drop(columns=drop, inplace=True)
             
         elif action == 2 and len(self.inventory) != 0: 
             self.von += self.inventory[-1] * self.state.tail(1)['cl'].item()
@@ -54,16 +49,10 @@ class CustomEnv(gym.Env):
             self.timestep += 1
             self.state = self.data.iloc[self.timestep:self.timestep+42]
             self.tempstate = self.data.iloc[self.timestep:self.timestep+42]
-            # print(pd.to_datetime(self.state.tail(1)['timestamp_o'], unit='ms') )
-            drop = ['timestamp_o', 'timestamp_cl', 'ignore']
-            self.state.drop(columns=drop, inplace=True)
         else:
             self.timestep += 1
             self.state = self.data.iloc[self.timestep:self.timestep+42]
             self.tempstate = self.data.iloc[self.timestep:self.timestep+42]
-            # print(pd.to_datetime(self.state.tail(1)['timestamp_o'], unit='ms') )
-            drop = ['timestamp_o', 'timestamp_cl', 'ignore']
-            self.state.drop(columns=drop, inplace=True)
         # Define reward based on the new state
         reward = self._calculate_reward()
 
