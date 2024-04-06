@@ -38,8 +38,8 @@ class CustomEnv(gym.Env):
 
         # Perform action and update state
         if action == 1 and self.von > 0:
-            self.inventory.append((self.von/10)/self.state.tail(1)['cl'].item())
-            self.von -= self.von/10
+            self.inventory.append((self.von/5)/self.state.tail(1)['cl'].item())
+            self.von -= self.von/5
             self.timestep += 1
             self.state = self.data.iloc[self.timestep:self.timestep+42]
             self.tempstate = self.temp.iloc[self.timestep:self.timestep+42]
