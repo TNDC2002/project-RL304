@@ -37,7 +37,7 @@ class CustomEnv(gym.Env):
         print("=================================================================")
 
         # Perform action and update state
-        if action == 1 and self.von > 0 and self.inventory < 10:
+        if action == 1 and self.von > 0 and len(self.inventory) < 10:
             self.inventory.append((self.von/5)/self.state.tail(1)['cl'].item())
             self.von -= self.von/5
             self.timestep += 1
