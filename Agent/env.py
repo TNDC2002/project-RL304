@@ -93,6 +93,6 @@ class CustomEnv(gym.Env):
     def _is_done(self):
         # Define termination condition
         
-        print(((1711339200000 - self.tempstate.tail(1)['timestamp_o'].item())*100) / 1711339200000, '%')
+        print(((self.tempstate.tail(1)['timestamp_o'].item() - self.temp.iloc[200+41:200+42].tail(1)['timestamp_o'].item())*100)/(1711339200000 - self.tempstate.tail(1)['timestamp_o'].item()), '%')
         return self.tempstate.tail(1)['timestamp_o'].item() >= 1711339200000
 
