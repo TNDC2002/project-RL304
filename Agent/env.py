@@ -22,7 +22,6 @@ class CustomEnv(gym.Env):
         self.von = 1000
         self.portfolio = 1000
         self.inventory = []
-        # print("env: ",self.state )
     def reset(self):
         self.timestep = 200
         self.state = self.data.iloc[self.timestep:self.timestep+42]
@@ -62,7 +61,6 @@ class CustomEnv(gym.Env):
 
         # Define observation (state) for the next step
         next_observation = self.state.to_numpy().reshape(1,-1)
-        # print("next: ",next_observation )
         return next_observation, reward, done
 
     def _calculate_reward(self):
@@ -70,22 +68,19 @@ class CustomEnv(gym.Env):
         for each in self.inventory:
             each *= self.state.tail(1)['cl'].item()
             portfo += each
-            # print('portfo:',portfo)
         portfo += self.von
         reward = portfo - self.portfolio
         self.portfolio = portfo
         
-        # print('reward:',reward)
-        # print('inventory:',self.inventory)
         print('portfolio:',self.portfolio)
         print("--------------------------------------------")
+        print('inventory:',len(self.inventory))
+        print('inventory:',self.inventory))
         return reward  # No reward otherwise
 
     def _is_done(self):
         # Define termination condition
-        print("is done:",pd.to_datetime(self.tempstate.tail(1)['timestamp_o'], unit='ms') )
-        print('timestep:', self.timestep)
         
-        print(self.tempstate.tail(1)['timestamp_o'].item(), '>=', 1711339200000, '=',self.tempstate.tail(1)['timestamp_o'].item() >= 1711339200000)
+        print(self.tempstate.tail(1)['timestamp_o'].item() / 1711339200000 *100, '%')
         return self.tempstate.tail(1)['timestamp_o'].item() >= 1711339200000
 
