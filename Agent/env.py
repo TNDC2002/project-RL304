@@ -35,10 +35,16 @@ class CustomEnv(gym.Env):
         assert self.action_space.contains(action), "Invalid action"
         print("=================================================================")
 
+        reward = 0
         # Perform action and update state
         if action == 1 and self.von > 0 and len(self.inventory) < 10:
+            
             self.inventory.append((self.von/5)/self.state.tail(1)['cl'].item())
             self.von -= self.von/5
+
+            # Define reward based on the new state
+            reward += self._calculate_reward()
+            
             self.timestep += 1
             self.state = self.data.iloc[self.timestep:self.timestep+42]
             self.tempstate = self.temp.iloc[self.timestep:self.timestep+42]
@@ -46,15 +52,21 @@ class CustomEnv(gym.Env):
         elif action == 2 and len(self.inventory) != 0: 
             self.von += self.inventory[-1] * self.state.tail(1)['cl'].item()
             self.inventory = self.inventory[:-1]       
+
+            # Define reward based on the new state
+            reward += self._calculate_reward()
+            
             self.timestep += 1
             self.state = self.data.iloc[self.timestep:self.timestep+42]
             self.tempstate = self.temp.iloc[self.timestep:self.timestep+42]
         else:
+            # Define reward based on the new state
+            reward += self._calculate_reward()
+            
             self.timestep += 1
             self.state = self.data.iloc[self.timestep:self.timestep+42]
             self.tempstate = self.temp.iloc[self.timestep:self.timestep+42]
-        # Define reward based on the new state
-        reward = self._calculate_reward()
+        
 
         # Check if episode is done
         done = self._is_done()
