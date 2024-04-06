@@ -34,7 +34,7 @@ class CustomEnv(gym.Env):
     def step(self, action):
         assert self.action_space.contains(action), "Invalid action"
         print("=================================================================")
-
+        print(pd.to_datetime(self.tempstate.tail(1)['timestamp_o']))
         reward = 0
         # Perform action and update state
         if action == 1 and self.von > 0 and len(self.inventory) < 10:
