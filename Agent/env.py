@@ -11,8 +11,9 @@ class CustomEnv(gym.Env):
         
         
         self.timestep = 200
-        self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
-        self.tempstate = get_data('./Data').iloc[self.timestep:self.timestep+42]
+        self.data = get_data('./Data')
+        self.state = self.data.iloc[self.timestep:self.timestep+42]
+        self.tempstate = self.data.iloc[self.timestep:self.timestep+42]
         drop = ['timestamp_o', 'timestamp_cl', 'ignore']
         self.state.drop(columns=drop, inplace=True)
         
@@ -22,8 +23,8 @@ class CustomEnv(gym.Env):
         # print("env: ",self.state )
     def reset(self):
         self.timestep = 200
-        self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
-        self.tempstate = get_data('./Data').iloc[self.timestep:self.timestep+42]
+        self.state = self.data.iloc[self.timestep:self.timestep+42]
+        self.tempstate = self.data.iloc[self.timestep:self.timestep+42]
         drop = ['timestamp_o', 'timestamp_cl', 'ignore']
         self.state.drop(columns=drop, inplace=True)
         
@@ -34,11 +35,6 @@ class CustomEnv(gym.Env):
 
     def step(self, action):
         assert self.action_space.contains(action), "Invalid action"
-        # if self.timestep == 200 and get_data('./Data').iloc[self.timestep:self.timestep+42]['timestamp_o'].head(1).item() >= 1506412800000:
-        #     self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
-        #     drop = ['timestamp_o', 'timestamp_cl', 'ignore']
-        #     self.state.drop(columns=drop, inplace=True)
-        #     print('IT WRONG:',pd.to_datetime(get_data('./Data').iloc[self.timestep+41:self.timestep+42].head(1)['timestamp_o'], unit='ms'))
         print("=================================================================")
 
         # Perform action and update state
@@ -46,8 +42,8 @@ class CustomEnv(gym.Env):
             self.inventory.append((self.von/10)/self.state.tail(1)['cl'].item())
             self.von -= self.von/10
             self.timestep += 1
-            self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
-            self.tempstate = get_data('./Data').iloc[self.timestep:self.timestep+42]
+            self.state = self.data.iloc[self.timestep:self.timestep+42]
+            self.tempstate = self.data.iloc[self.timestep:self.timestep+42]
             # print(pd.to_datetime(self.state.tail(1)['timestamp_o'], unit='ms') )
             drop = ['timestamp_o', 'timestamp_cl', 'ignore']
             self.state.drop(columns=drop, inplace=True)
@@ -56,15 +52,15 @@ class CustomEnv(gym.Env):
             self.von += self.inventory[-1] * self.state.tail(1)['cl'].item()
             self.inventory = self.inventory[:-1]       
             self.timestep += 1
-            self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
-            self.tempstate = get_data('./Data').iloc[self.timestep:self.timestep+42]
+            self.state = self.data.iloc[self.timestep:self.timestep+42]
+            self.tempstate = self.data.iloc[self.timestep:self.timestep+42]
             # print(pd.to_datetime(self.state.tail(1)['timestamp_o'], unit='ms') )
             drop = ['timestamp_o', 'timestamp_cl', 'ignore']
             self.state.drop(columns=drop, inplace=True)
         else:
             self.timestep += 1
-            self.state = get_data('./Data').iloc[self.timestep:self.timestep+42]
-            self.tempstate = get_data('./Data').iloc[self.timestep:self.timestep+42]
+            self.state = self.data.iloc[self.timestep:self.timestep+42]
+            self.tempstate = self.data.iloc[self.timestep:self.timestep+42]
             # print(pd.to_datetime(self.state.tail(1)['timestamp_o'], unit='ms') )
             drop = ['timestamp_o', 'timestamp_cl', 'ignore']
             self.state.drop(columns=drop, inplace=True)
