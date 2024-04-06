@@ -12,10 +12,11 @@ class CustomEnv(gym.Env):
         
         self.timestep = 200
         self.data = get_data('./Data')
+        self.temp = get_data('./Data')
         drop = ['timestamp_o', 'timestamp_cl', 'ignore']
         self.data.drop(columns=drop, inplace=True)
         self.state = self.data.iloc[self.timestep:self.timestep+42]
-        self.tempstate = self.data.iloc[self.timestep:self.timestep+42]
+        self.tempstate = self.temp.iloc[self.timestep:self.timestep+42]
         
         
         self.von = 1000
@@ -25,7 +26,7 @@ class CustomEnv(gym.Env):
     def reset(self):
         self.timestep = 200
         self.state = self.data.iloc[self.timestep:self.timestep+42]
-        self.tempstate = self.data.iloc[self.timestep:self.timestep+42]
+        self.tempstate = self.temp.iloc[self.timestep:self.timestep+42]
         self.von = 1000
         self.portfolio = 1000
         self.inventory = []
@@ -41,18 +42,18 @@ class CustomEnv(gym.Env):
             self.von -= self.von/10
             self.timestep += 1
             self.state = self.data.iloc[self.timestep:self.timestep+42]
-            self.tempstate = self.data.iloc[self.timestep:self.timestep+42]
+            self.tempstate = self.temp.iloc[self.timestep:self.timestep+42]
             
         elif action == 2 and len(self.inventory) != 0: 
             self.von += self.inventory[-1] * self.state.tail(1)['cl'].item()
             self.inventory = self.inventory[:-1]       
             self.timestep += 1
             self.state = self.data.iloc[self.timestep:self.timestep+42]
-            self.tempstate = self.data.iloc[self.timestep:self.timestep+42]
+            self.tempstate = self.temp.iloc[self.timestep:self.timestep+42]
         else:
             self.timestep += 1
             self.state = self.data.iloc[self.timestep:self.timestep+42]
-            self.tempstate = self.data.iloc[self.timestep:self.timestep+42]
+            self.tempstate = self.temp.iloc[self.timestep:self.timestep+42]
         # Define reward based on the new state
         reward = self._calculate_reward()
 
