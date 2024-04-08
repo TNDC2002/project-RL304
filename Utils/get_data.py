@@ -28,6 +28,7 @@ def get_data(folder_path = '../Data/'):
         # Read CSV file into DataFrame and append to the list
         df = pd.read_csv(file_path)
         df.dropna(axis=0, how='all', inplace=True)
+        df = df.sort_values(by='timestamp_o')
         dfs.append(df)
 
     # Merge DataFrames into a single DataFrame
