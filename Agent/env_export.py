@@ -22,15 +22,15 @@ class CustomEnv(gym.Env[np.ndarray, Union[int, np.ndarray]]):
         
         
         
-        normalized_data = scaler.fit_transform(self.data)
-        self.data = pd.DataFrame(normalized_data, columns=self.data.columns)
+        # normalized_data = scaler.fit_transform(self.data)
+        # self.data = pd.DataFrame(normalized_data, columns=self.data.columns)
         
         
         # self.temp = self.data.copy()
         drop = ['timestamp_o', 'timestamp_cl', 'ignore']
         self.data.drop(columns=drop, inplace=True)
         self.state = self.data.iloc[self.timestep:self.timestep+14258]
-        self.state.to_csv('normalized_data.csv', index=False)
+        self.state.to_csv('unnormalized_data.csv', index=False)
         self.state_reward = self.data.iloc[self.timestep+42:self.timestep+ 42 + self.prediction_expire]
         # self.tempstate = self.temp.iloc[self.timestep:self.timestep+42]
         
