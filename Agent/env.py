@@ -3,11 +3,13 @@ from gym import spaces
 import numpy as np
 from Utils.get_data import get_data
 import pandas as pd
-class CustomEnv(gym.Env):
+from typing import Optional, Union
+# class CustomEnv(gym.Env):
+class CustomEnv(gym.Env[np.ndarray, Union[int, np.ndarray]]):
     
     def __init__(self):
         super(CustomEnv, self).__init__()  # Example discrete state space
-        self.action_space = spaces.Discrete(2)  # Three discrete actions: 0, 1, 2
+        self.action_space = spaces.Discrete(3)  # Three discrete actions: 0, 1, 2
         self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape=(42,33),dtype=np.float32) #spaces.Box(low=-np.inf, high=np.inf, shape=(33,), dtype=np.float32)
         
         
@@ -24,7 +26,8 @@ class CustomEnv(gym.Env):
         self.portfolio = 1000
         self.inventory = []
         self.count = 1
-    def reset(self):
+    def reset(self,seed: Optional[int] = None,):
+        super().reset(seed=seed)
         self.timestep = 200
         self.state = self.data.iloc[self.timestep:self.timestep+42]
         # self.tempstate = self.temp.iloc[self.timestep:self.timestep+42]
@@ -40,7 +43,17 @@ class CustomEnv(gym.Env):
         # print(pd.to_datetime(self.tempstate.tail(1)['timestamp_o'].item(), unit='ms'))
         reward = 0
         # Perform action and update state
-        if action == 1:
+        if action == 0:
+            self.timestep += 1
+            self.state = self.data.iloc[self.timestep:self.timestep+42]
+            if self._calculate_reward(1) < 0 and self._calculate_reward(2) < 0:
+                reward = 0.001
+            else:
+                reward = -0.001
+
+            self._calculate_portfolio()
+
+        elif action == 1:
             if self.von > 0:
                 self.inventory.append((self.von/self.state.tail(1)['cl'].item())*0.999)
             
@@ -53,7 +66,7 @@ class CustomEnv(gym.Env):
             self.von = 0
             self._calculate_portfolio()
             
-        elif action == 0:
+        elif action == 2:
             von = 0
             if len(self.inventory) != 0:
                 von += (self.inventory[-1] * self.state.tail(1)['cl'].item())*0.999
@@ -72,8 +85,9 @@ class CustomEnv(gym.Env):
                 self.inventory = self.inventory[:-1]
         
             self._calculate_portfolio()
+            
 
-
+        
         # Check if episode is done
         self.count +=1
         done = self._is_done()
@@ -85,8 +99,8 @@ class CustomEnv(gym.Env):
         return next_observation, reward, done, self.portfolio, self.inventory
 
     def _calculate_reward(self, action):
-        portfo = 0
-        if action == 0: #sell:
+        reward = 0
+        if action == 2: #sell:
             # if len(self.inventory) != 0:
             #     for each in self.inventory:
             #         each *= (self.state.tail(1)['cl'].item()*0.999)
@@ -112,6 +126,9 @@ class CustomEnv(gym.Env):
             next_ = self.state.tail(1)['cl'].item()
             ratio = (next_ - now)/now
             reward = ratio
+        
+        # print("reward:",reward*100)
+        reward -= 0.005
         return reward  # No reward otherwise
         
     def _calculate_portfolio(self):
