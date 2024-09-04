@@ -1,4 +1,4 @@
-from Agent.env import CustomEnv
+from Agent.env_export import CustomEnv
 from Utils.get_data import get_data
 env = CustomEnv()
 while True:
@@ -7,12 +7,12 @@ while True:
     assert user_input in [0, 1, 2], "Invalid action"  # Validate the input
 
     # Call step method on the environment instance
-    next_state, reward, done = env.step(user_input)
-    data = get_data('./Data')
-    drop = ['timestamp_o', 'timestamp_cl', 'ignore']
-    data.drop(columns=drop, inplace=True)
-    state = data.iloc[200:200+42]
-    print("columns:", len(state.columns))
+    next_state, reward, done, portfolio, item = env.step(user_input)
+    
+    print("state:", len(next_state))
+    print("state:", len(next_state[0]))
+    print("state:", len(next_state[0][0]))
+    print("state:", next_state[0][0])
     # Print information
     # print("Next state:", next_state.columns)
     # print("Next state:", len(next_state.columns))

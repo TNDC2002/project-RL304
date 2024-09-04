@@ -1,22 +1,24 @@
-from env import CustomEnv
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 
-# Create an instance of CustomEnv
-env = CustomEnv()
+# Create a sample DataFrame
+data = pd.DataFrame({
+    'A': [1, 4, 7, 10],
+    'B': [2, 5, 8, 11],
+    'C': [3, 6, 9, 12]
+})
 
-while True:
-    # Get action input from the user
-    user_input = int(input("Enter action (0, 1, or 2): "))  # Assuming actions are integers
-    assert user_input in [0, 1, 2], "Invalid action"  # Validate the input
+print("Original DataFrame:")
+print(data)
 
-    # Call step method on the environment instance
-    next_state, reward, done = env.step(user_input)
+# Initialize MinMaxScaler
+scaler = MinMaxScaler()
 
-    # Print information
-    # print("Next state:", next_state)
-    # print("Reward:", reward)
-    # print("Done:", done)
+# Fit and transform the data
+normalized_data = scaler.fit_transform(data)
 
-    # Check if episode is finished
-    if done:
-        print("Episode finished")
-        break  # End the loop
+# Convert the normalized data back to a DataFrame
+normalized_df = pd.DataFrame(normalized_data, columns=data.columns)
+
+print("\nNormalized DataFrame:")
+print(normalized_df)

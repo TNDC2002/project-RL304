@@ -4,6 +4,7 @@ import numpy as np
 from Utils.get_data import get_data
 import pandas as pd
 from typing import Optional, Union
+from sklearn.preprocessing import MinMaxScaler
 # class CustomEnv(gym.Env):
 class CustomEnv(gym.Env[np.ndarray, Union[int, np.ndarray]]):
     
@@ -12,9 +13,19 @@ class CustomEnv(gym.Env[np.ndarray, Union[int, np.ndarray]]):
         self.action_space = spaces.Discrete(3)  # Three discrete actions: 0, 1, 2
         self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape=(42,33),dtype=np.float32) #spaces.Box(low=-np.inf, high=np.inf, shape=(33,), dtype=np.float32)
         
+        # Initialize MinMaxScaler
+        scaler = MinMaxScaler()
+        
         self.prediction_expire = 6
         self.timestep = 200
         self.data = get_data('./Data')
+        
+        
+        
+        normalized_data = scaler.fit_transform(self.data)
+        self.data = pd.DataFrame(normalized_data, columns=self.data.columns)
+        
+        
         # self.temp = self.data.copy()
         drop = ['timestamp_o', 'timestamp_cl', 'ignore']
         self.data.drop(columns=drop, inplace=True)
