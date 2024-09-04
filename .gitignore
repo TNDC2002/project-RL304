@@ -1,9 +1,9 @@
 # dataset
 Data/
-
+# Pretrained models
+Models/
 # colab stuff:
 *.zip
-*.ipynb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
