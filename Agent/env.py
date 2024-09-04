@@ -46,10 +46,17 @@ class CustomEnv(gym.Env[np.ndarray, Union[int, np.ndarray]]):
         if action == 0:
             self.timestep += 1
             self.state = self.data.iloc[self.timestep:self.timestep+42]
-            if self._calculate_reward(1) < 0 and self._calculate_reward(2) < 0:
+
+            reward_1 = self._calculate_reward(1)
+            reward_2 = self._calculate_reward(2)
+
+            if reward_1 < 0 and reward_2 < 0:
                 reward = 0.001
             else:
-                reward = -0.001
+                if reward_1 > reward_2:
+                    reward -= reward_1
+                else:
+                    reward -= reward_2
 
             self._calculate_portfolio()
 
@@ -91,11 +98,7 @@ class CustomEnv(gym.Env[np.ndarray, Union[int, np.ndarray]]):
         # Check if episode is done
         self.count +=1
         done = self._is_done()
-        # Define observation (state) for the next step
-        # next_observation = self.state.to_numpy().reshape(1,-1) # (42, 33) -> (1, 42*33)
         next_observation = np.expand_dims(self.state.to_numpy(), 0)  # (42, 33) -> (1, 42, 33)
-        # if reward < 0:
-        #     reward *= 1.25
         return next_observation, reward, done, self.portfolio, self.inventory
 
     def _calculate_reward(self, action):
