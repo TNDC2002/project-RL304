@@ -1,4 +1,5 @@
 from Agent.env import CustomEnv
+from Utils.get_data import get_data
 env = CustomEnv()
 while True:
     # Get action input from the user
@@ -7,7 +8,11 @@ while True:
 
     # Call step method on the environment instance
     next_state, reward, done = env.step(user_input)
-
+    data = get_data('./Data')
+    drop = ['timestamp_o', 'timestamp_cl', 'ignore']
+    data.drop(columns=drop, inplace=True)
+    state = data.iloc[200:200+42]
+    print("columns:", len(state.columns))
     # Print information
     # print("Next state:", next_state.columns)
     # print("Next state:", len(next_state.columns))
